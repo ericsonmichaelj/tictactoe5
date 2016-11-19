@@ -1,9 +1,9 @@
 require('babel-register')
-const SERVER_PORT_NUMBER = 8080;
-const webpack = require('webpack');
+const SERVER_PORT_NUMBER = 8080
+const webpack = require('webpack')
 const webpackDevServer = require('webpack-dev-server')
-const config = require("./webpack.config.js");
-const compiler = webpack(config);
+const config = require('./webpack.config.js')
+const compiler = webpack(config)
 const server = new webpackDevServer(compiler,{
     contentBase: './dist',
     hot: true

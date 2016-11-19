@@ -1,12 +1,12 @@
 module.exports = {
   entry: [
-    './src/index.jsx'
+    './src/index.js'
   ],
   module: {
     loaders: [{
       test: /\.jsx?$/,
       exclude: /node_modules/,
-      loader: 'react-hot!babel'
+      loader: 'react-hot-loader/webpack!babel'
     }]
   },
   resolve: {
