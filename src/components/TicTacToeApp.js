@@ -1,14 +1,15 @@
-import React is} from 'react'
+import React from 'react'
 import swal from 'sweetalert'
 import Immutable from 'immutable'
 import ChangeMovePanel from './ChangeMovePanel'
 import TicTacToeBoard from './TicTacToeBoard'
 import GamePanel from './GamePanel'
-import { players } from '../constants/'
-
-const ROWS_IN_GRID = 5
-const COLUMNS_IN_GRID = 5
-const LENGTH_OF_DIAGONAL_IN_GRID = 5
+import {
+  players,
+  ROWS_IN_GRID,
+  COLUMNS_IN_GRID,
+  LENGTH_OF_DIAGONAL_IN_GRID
+ } from '../constants/'
 
 const mutableGridRow = Array(ROWS_IN_GRID).fill(null)
 const mutableGrid = Array(COLUMNS_IN_GRID).fill(mutableGridRow)
@@ -40,20 +41,31 @@ class TicTacToeApp extends React.Component {
     })
   }
 
+  humanDoesTemporaryMove = (row, column) => {
+    this.setState({
+      humanTemporaryMove: { row, column },
+      humanOnTemporaryMove: true
+    })
+  }
+
   humanCompletesTemporaryMove = () => {
     const gridWithNewMove = this.state.grid.get(this.state.humanTemporaryMove.row)
       .set(this.state.humanTemporaryMove.column, players.HUMAN)
     this.setState({
       humanOnTemporaryMove: false,
       grid: gridWithNewMove
-    }, () => {
-      const humanWon = this._checkforWinner(players.HUMAN)
-      if (humanWon) {
-        this.setState({ winner: players.HUMAN })
-      } else {
-        this.setState({ whoseTurn: players.COMPUTER })
-      }
-    })
+    }, this._updateGameResultsAfterMove)
+  }
+
+  _updateGameResultsAfterMove() {
+    const currentPlayer = this.state.whoseTurn
+    const otherPlayer = currentPlayer  === players.COMPUTER ? players.COMPUTER : players.HUMAN
+    const winner = this._checkforWinner(currentPlayer)
+    if (winner) {
+      this.setState({ winner: currentPlayer })
+    } else {
+      this.setState({ whoseTurn:  otherPlayer })
+    }
   }
 
   humanUndoesTemporaryMove = () => {
@@ -145,6 +157,15 @@ class TicTacToeApp extends React.Component {
     return true
   }
 
+  computerCompletesMove = (move) => {
+    this.setState({
+      grid: grid.get(move.row).set(move.column)
+    }, () => this._updateGameResultsAfterMove)
+  }
+
+  newGame = () => {
+    this.setState({ ...newGameConfig, name: this.state.name })
+  }
 
   render() {
     return (
@@ -159,6 +180,8 @@ class TicTacToeApp extends React.Component {
           OnTemporaryMove={this.state.humanOnTemporaryMove}
           temporaryMove={this.state.human}
           whoseTurn={this.state.whoseTurn}
+          humanDoesTemporaryMove={this.humanTemporaryMove}
+          computerCompletesMove={this.computerCompletesMove}
         />
         <GamePanel
           name={this.state.name}

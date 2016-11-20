@@ -10,6 +10,9 @@ class GamePanel extends React.Component {
           {this.props.winner === players.HUMAN ?
             'You won!' : 'computer won'
           }
+          <button onClick={this.props.newGame}>
+            New Game
+          </button>
         </div>
       )
     } else {
@@ -27,6 +30,7 @@ class GamePanel extends React.Component {
     return (
       <div>
         Welcome ${this.props.name}!
+        _renderGameStatusMessage()
       </div>
     )
   }
@@ -35,7 +39,8 @@ class GamePanel extends React.Component {
 GamePanel.propTypes = {
   name: PropTypes.string,
   winner: PropTypes.number,
-  whoseTurn: PropTypes.number
+  whoseTurn: PropTypes.number,
+  newGame: PropTypes.func
 }
 
 export default GamePanel

@@ -1,49 +1,65 @@
 import React, { PropTypes } from 'react'
 import Immutable from 'immutable'
-import { players } from '../constants/'
+import { players, ROWS_IN_GRID, COLUMNS_IN_GRID } from '../constants/'
+import Cell from './Cell'
 
 class TicTacToeBoard extends React.Component {
 
-  validateClick = () => {
-    if()
-  }
-
-  _renderCell = (value, indexRow, indexColumn) => {
-    if (this.props.humanTemporaryMove.column === indexRow
-        && this.props.humanTemporaryMove.column === indexColumn) {
-      return (
-        <div>x</div>
-      )
-    } else if (value === players.COMPUTER) {
-      return (
-        <div>o</div>
-        )
-    } else if (value === players.COMPUTER) {
-      return <div>o</div>
-    } else {
-      return (
-        <div onClick={this.validateClick}></div>
-      )
+  onComponentWillMount() {
+    if (this.props.whoseTurn === players.COMPUTER) {
+      this.computerCreatesMove()
     }
   }
 
-  _renderRow = (list, indexRow) => {
-    return (
-        <tr key={index}>
-          {list.map((value, indexColumn) =>
-              <td>this._renderCell(value, indexRow, indexColumn)</td>
-          )}
-        </tr>
-      )
+  onComponentDidUpdate() {
+    if (this.props.whoseTurn === players.COMPUTER) {
+      this.computerCreatesMove()
+    }
   }
+
+  computerCreatesMove = () => {
+    const TIME_COMPUTER_TAKES = 3000
+    const initialTime = performance.now()
+    const move = this.computerDecidesMove()
+    const finalTime = performance.now()
+    setTimeout(() => this.props.computerCompletesMove(move),
+     TIME_COMPUTER_TAKES - (finalTime - initialTime))
+  }
+
+  _computerDecidesMove() {
+    // TODO: Improve algorithm
+    for (let i = 0; i < ROWS_IN_GRID; i += 1) {
+      for (let j = 0; j < COLUMNS_IN_GRID; j += 1) {
+        if (this.props.grid.get(i).get(j) === null) {
+          return { row: i, column: j }
+        }
+      }
+    }
+    return Error('No empty cell')
+  }
+  _renderRow = (list, indexRow) =>
+    (
+      <tr key={indexRow}>
+        {list.map((value, indexColumn) =>
+          <Cell
+            row={indexRow}
+            column={indexColumn}
+            value={value}
+            humanDoesTemporaryMove={this.props.humanDoesTemporaryMove}
+            temporaryMove={this.props.temporaryMove}
+            onTemporaryMove={this.props.onTemporaryMove}
+          />
+        )}
+      </tr>
+    )
 
   render() {
     return (
       <table>
-        {this.props.grid.map((list, index) =>
-          {this._renderRow(list, indexRow)}
+        {this.props.grid.map((list, indexRow) =>
+          this._renderRow(list, indexRow)
           )
-      }
+        }
       </table>
     )
   }
@@ -51,12 +67,14 @@ class TicTacToeBoard extends React.Component {
 
 TicTacToeBoard.propTypes = {
   grid: PropTypes.instanceOf(Immutable.List),
-  humanTemporaryMove: PropTypes.shape({
+  temporaryMove: PropTypes.shape({
     column: PropTypes.number,
     row: PropTypes.number
   }),
-
-
+  onTemporaryMove: PropTypes.boolean,
+  computerCompletesMove: PropTypes.func,
+  humanDoesTemporaryMove: PropTypes.func,
+  whoseTurn: PropTypes.number
 }
 
 export default TicTacToeBoard
