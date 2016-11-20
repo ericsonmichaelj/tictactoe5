@@ -5,14 +5,15 @@ import Cell from './Cell'
 
 class TicTacToeBoard extends React.Component {
 
-  onComponentWillMount() {
+  componentWillMount() {
     if (this.props.whoseTurn === players.COMPUTER) {
       this.computerCreatesMove()
     }
   }
 
-  onComponentDidUpdate() {
-    if (this.props.whoseTurn === players.COMPUTER) {
+  componentDidUpdate(prevProps) {
+    if (prevProps.whoseTurn !== this.props.whoseTurn
+      && this.props.whoseTurn === players.COMPUTER) {
       this.computerCreatesMove()
     }
   }
@@ -20,9 +21,11 @@ class TicTacToeBoard extends React.Component {
   computerCreatesMove = () => {
     const TIME_COMPUTER_TAKES = 3000
     const initialTime = performance.now()
-    const move = this.computerDecidesMove()
+    const move = this._computerDecidesMove()
     const finalTime = performance.now()
-    setTimeout(() => this.props.computerCompletesMove(move),
+    setTimeout(() => {
+      this.props.computerCompletesMove(move)
+    },
      TIME_COMPUTER_TAKES - (finalTime - initialTime))
   }
 
@@ -43,8 +46,11 @@ class TicTacToeBoard extends React.Component {
         {list.map((value, indexColumn) =>
           <Cell
             row={indexRow}
+            key={indexColumn}
             column={indexColumn}
+            whoseTurn={this.props.whoseTurn}
             value={value}
+            winner={this.props.winner}
             humanDoesTemporaryMove={this.props.humanDoesTemporaryMove}
             temporaryMove={this.props.temporaryMove}
             onTemporaryMove={this.props.onTemporaryMove}
@@ -56,25 +62,28 @@ class TicTacToeBoard extends React.Component {
   render() {
     return (
       <table>
+        <tbody>
         {this.props.grid.map((list, indexRow) =>
           this._renderRow(list, indexRow)
           )
         }
+        </tbody>
       </table>
     )
   }
 }
 
 TicTacToeBoard.propTypes = {
-  grid: PropTypes.instanceOf(Immutable.List),
+  grid: PropTypes.instanceOf(Immutable.List).isRequired,
   temporaryMove: PropTypes.shape({
     column: PropTypes.number,
     row: PropTypes.number
   }),
-  onTemporaryMove: PropTypes.boolean,
-  computerCompletesMove: PropTypes.func,
-  humanDoesTemporaryMove: PropTypes.func,
-  whoseTurn: PropTypes.number
+  winner: PropTypes.oneOf([players.HUMAN, players.COMPUTER]),
+  onTemporaryMove: PropTypes.bool,
+  computerCompletesMove: PropTypes.func.isRequired,
+  humanDoesTemporaryMove: PropTypes.func.isRequired,
+  whoseTurn: PropTypes.oneOf([players.HUMAN, players.COMPUTER]).isRequired
 }
 
 export default TicTacToeBoard

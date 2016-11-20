@@ -20,7 +20,7 @@ const newGameConfig = {
   grid,
   humanOnTemporaryMove: false,
   humanTemporaryMove: null,
-  whoseTurn: Math.floor(2 * Math.random()) ? players.HUMAN : players.ROBOT,
+  whoseTurn: Math.floor(2 * Math.random()) ? players.HUMAN : players.COMPUTER,
   winner: null
 }
 
@@ -37,7 +37,12 @@ class TicTacToeApp extends React.Component {
       animation: 'slide-from-top',
       inputPlaceholder: 'Type your name here'
     }, (inputValue) => {
+      if (inputValue === '') {
+        swal.showInputError('You need to write something!')
+        return
+      }
       this.setState({ name: inputValue })
+      swal.close()
     })
   }
 
@@ -49,8 +54,9 @@ class TicTacToeApp extends React.Component {
   }
 
   humanCompletesTemporaryMove = () => {
-    const gridWithNewMove = this.state.grid.get(this.state.humanTemporaryMove.row)
-      .set(this.state.humanTemporaryMove.column, players.HUMAN)
+    const { row, column } = this.state.humanTemporaryMove
+    const gridWithNewMove = this.state.grid
+      .setIn([row, column], players.HUMAN)
     this.setState({
       humanOnTemporaryMove: false,
       grid: gridWithNewMove
@@ -59,8 +65,8 @@ class TicTacToeApp extends React.Component {
 
   _updateGameResultsAfterMove() {
     const currentPlayer = this.state.whoseTurn
-    const otherPlayer = currentPlayer  === players.COMPUTER ? players.COMPUTER : players.HUMAN
-    const winner = this._checkforWinner(currentPlayer)
+    const otherPlayer = currentPlayer  === players.COMPUTER ? players.HUMAN : players.COMPUTER
+    const winner = this._checkForWinner(currentPlayer)
     if (winner) {
       this.setState({ winner: currentPlayer })
     } else {
@@ -89,7 +95,7 @@ class TicTacToeApp extends React.Component {
   _hasXInForwardDiagonal = (item, x) => {
     let allowableUnfoundItemsInforwardDiagonal = LENGTH_OF_DIAGONAL_IN_GRID - x
     for (let i = 0; i < LENGTH_OF_DIAGONAL_IN_GRID; i += 1) {
-      if (this.state.grid.get(i).get(i) !== item) {
+      if (this.state.grid.getIn([i, i]) !== item) {
         allowableUnfoundItemsInforwardDiagonal -= 1
       }
       if (allowableUnfoundItemsInforwardDiagonal < 0) {
@@ -102,7 +108,7 @@ class TicTacToeApp extends React.Component {
   _hasXInBackwardDiagonal = (item, x) => {
     let allowableUnfoundItemsInBackwardsDiagonal = LENGTH_OF_DIAGONAL_IN_GRID - x
     for (let i = 0; i < LENGTH_OF_DIAGONAL_IN_GRID; i += 1) {
-      if (this.state.grid.get(LENGTH_OF_DIAGONAL_IN_GRID - i).get(i) !== item) {
+      if (this.state.grid.getIn([LENGTH_OF_DIAGONAL_IN_GRID - 1 - i, i]) !== item) {
         allowableUnfoundItemsInBackwardsDiagonal -= 1
       }
       if (allowableUnfoundItemsInBackwardsDiagonal < 0) {
@@ -159,8 +165,8 @@ class TicTacToeApp extends React.Component {
 
   computerCompletesMove = (move) => {
     this.setState({
-      grid: grid.get(move.row).set(move.column)
-    }, () => this._updateGameResultsAfterMove)
+      grid: this.state.grid.setIn([move.row, move.column], players.COMPUTER)
+    }, this._updateGameResultsAfterMove)
   }
 
   newGame = () => {
@@ -173,21 +179,23 @@ class TicTacToeApp extends React.Component {
         {this.state.humanOnTemporaryMove ?
           <ChangeMovePanel
             completeTemporaryMove={this.humanCompletesTemporaryMove}
-            humanUndoesTemporaryMove={this.undoTemporyMove}
+            undoTemporaryMove={this.humanUndoesTemporaryMove}
           /> : null}
         <TicTacToeBoard
           grid={this.state.grid}
-          OnTemporaryMove={this.state.humanOnTemporaryMove}
-          temporaryMove={this.state.human}
+          winner={this.state.winner}
+          onTemporaryMove={this.state.humanOnTemporaryMove}
+          temporaryMove={this.state.humanTemporaryMove}
           whoseTurn={this.state.whoseTurn}
-          humanDoesTemporaryMove={this.humanTemporaryMove}
+          humanDoesTemporaryMove={this.humanDoesTemporaryMove}
           computerCompletesMove={this.computerCompletesMove}
         />
-        <GamePanel
+        {this.state.name ? <GamePanel
           name={this.state.name}
           winner={this.state.winner}
           whoseTurn={this.state.whoseTurn}
-        />
+          newGame={this.newGame}
+        /> : null }
       </div>
     )
   }

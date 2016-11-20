@@ -29,18 +29,18 @@ class GamePanel extends React.Component {
   render() {
     return (
       <div>
-        Welcome ${this.props.name}!
-        _renderGameStatusMessage()
+        Welcome {this.props.name}!
+          {this._renderGameStatusMessage()}
       </div>
     )
   }
 }
 
 GamePanel.propTypes = {
-  name: PropTypes.string,
-  winner: PropTypes.number,
-  whoseTurn: PropTypes.number,
-  newGame: PropTypes.func
+  name: PropTypes.string.isRequired,
+  winner: PropTypes.oneOf([players.HUMAN, players.COMPUTER]),
+  whoseTurn: PropTypes.oneOf([players.HUMAN, players.COMPUTER]),
+  newGame: PropTypes.func.isRequired
 }
 
 export default GamePanel

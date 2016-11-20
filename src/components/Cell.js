@@ -4,9 +4,9 @@ import { players } from '../constants'
 class Cell extends React.Component {
 
   validateClick = (displayItem) => {
-    const { whoseTurn, onTemporaryMove, humanDoesTemporaryMove, row, column } = this.props
+    const { whoseTurn, onTemporaryMove, humanDoesTemporaryMove, winner, row, column } = this.props
     if (!displayItem && whoseTurn === players.HUMAN
-      && !onTemporaryMove) {
+      && !onTemporaryMove && !winner) {
       humanDoesTemporaryMove(row, column)
     }
   }
@@ -14,7 +14,7 @@ class Cell extends React.Component {
   render() {
     let displayItem = null
     const { temporaryMove, value, column, row } = this.props
-    if (temporaryMove.column === column
+    if (temporaryMove && temporaryMove.column === column
       && temporaryMove.row === row) {
       displayItem = 'x'
     } else if (value === players.COMPUTER) {
@@ -32,16 +32,17 @@ class Cell extends React.Component {
   }
 }
 Cell.propTypes = {
-  row: PropTypes.number,
-  column: PropTypes.number,
+  row: PropTypes.number.isRequired,
+  column: PropTypes.number.isRequired,
   temporaryMove: PropTypes.shape({
     column: PropTypes.number,
     row: PropTypes.number
   }),
-  value: PropTypes.number,
-  onTemporaryMove: PropTypes.boolean,
-  humanDoesTemporaryMove: PropTypes.func,
-  whoseTurn: PropTypes.number
+  winner: PropTypes.oneOf([players.HUMAN, players.COMPUTER]),
+  value: PropTypes.oneOf([players.HUMAN, players.COMPUTER]),
+  onTemporaryMove: PropTypes.bool.isRequired,
+  humanDoesTemporaryMove: PropTypes.func.isRequired,
+  whoseTurn: PropTypes.oneOf([players.HUMAN, players.COMPUTER]).isRequired
 }
 
 export default Cell
