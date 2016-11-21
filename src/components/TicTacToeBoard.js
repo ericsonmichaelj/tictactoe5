@@ -42,7 +42,7 @@ class TicTacToeBoard extends React.Component {
   }
   _renderRow = (list, indexRow) =>
     (
-      <tr key={indexRow}>
+      <div key={indexRow} className='row'>
         {list.map((value, indexColumn) =>
           <Cell
             row={indexRow}
@@ -56,19 +56,17 @@ class TicTacToeBoard extends React.Component {
             onTemporaryMove={this.props.onTemporaryMove}
           />
         )}
-      </tr>
+      </div>
     )
 
   render() {
     return (
-      <table>
-        <tbody>
+      <div className='board'>
         {this.props.grid.map((list, indexRow) =>
           this._renderRow(list, indexRow)
           )
         }
-        </tbody>
-      </table>
+      </div>
     )
   }
 }

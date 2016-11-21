@@ -1,5 +1,9 @@
 import React, { PropTypes } from 'react'
-import { players } from '../constants'
+import {
+  players,
+  ROWS_IN_GRID,
+  COLUMNS_IN_GRID
+} from '../constants'
 
 class Cell extends React.Component {
 
@@ -11,11 +15,31 @@ class Cell extends React.Component {
     }
   }
 
+  _removeEdgeBorders = () => {
+    const style = {}
+    const styleForRemovingBorder = '3px transparent solid'
+    if (this.props.row === 0) {
+      style.borderTop = styleForRemovingBorder
+    }
+    if (this.props.column === 0) {
+      style.borderLeft = styleForRemovingBorder
+    }
+    if (this.props.row === ROWS_IN_GRID - 1) {
+      style.borderBottom = styleForRemovingBorder
+    }
+    if (this.props.column === COLUMNS_IN_GRID - 1) {
+      style.borderRight = styleForRemovingBorder
+    }
+    return style
+  }
+
   render() {
+    const style = this._removeEdgeBorders()
     let displayItem = null
     const { temporaryMove, value, column, row } = this.props
     if (temporaryMove && temporaryMove.column === column
       && temporaryMove.row === row) {
+      style.backgroundColor = '#faf2cc'
       displayItem = 'x'
     } else if (value === players.COMPUTER) {
       displayItem = 'o'
@@ -23,11 +47,13 @@ class Cell extends React.Component {
       displayItem = 'x'
     }
     return (
-      <td>
-        <button onClick={() => this.validateClick(displayItem)}>
-          {displayItem}
-        </button>
-      </td>
+      <div
+        className='square'
+        style={style}
+        onClick={() => this.validateClick(displayItem)}
+      >
+        <div className={`content bg ${displayItem}`} />
+      </div>
     )
   }
 }

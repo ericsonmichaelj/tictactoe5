@@ -1,0 +1,67 @@
+.square {
+    float: left;
+    border: 3px #928b8b solid;
+    position: relative;
+    width:20%;
+    padding-bottom : 20%;
+}
+.content {
+    position:absolute;
+    height:100%;
+    width:100%; 
+    text-align: center;
+}
+
+.board {
+    width: 75%;
+    margin: 0 auto;
+}
+
+@media only screen and (min-width: 450px) {
+    .board {
+        width: 50%;
+    }
+}
+
+@media only screen and (min-width : 768px) {
+    .board {
+        width: 450px;
+    }
+}
+
+.game-panel {
+    margin-top: 1em;
+}
+
+@media only screen and (min-width: 768px) {
+    .game-panel {
+        margin-top: 0;
+    }
+}
+
+.countdown-format {
+    margin: 1em 0;
+}
+
+.bg {
+    background-position:center center;
+    background-repeat:no-repeat;
+    background-size:cover
+}
+.x {
+    background-image:url('/img/x-img.png')
+}
+.o {
+    background-image:url('/img/o-img.png')
+}
+.game-panel-text {
+    font-weight: 500;
+}
+.computer-wins {
+    color: #a94442;
+    font-weight: bold;
+}
+.human-wins {
+    color: #3c763d;
+    font-weight: bold;
+}

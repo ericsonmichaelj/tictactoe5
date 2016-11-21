@@ -59,6 +59,7 @@ class TicTacToeApp extends React.Component {
       .setIn([row, column], players.HUMAN)
     this.setState({
       humanOnTemporaryMove: false,
+      humanTemporaryMove: null,
       grid: gridWithNewMove
     }, this._updateGameResultsAfterMove)
   }
@@ -173,29 +174,39 @@ class TicTacToeApp extends React.Component {
     this.setState({ ...newGameConfig, name: this.state.name })
   }
 
+  _renderApp = () => (
+    <div>
+      <ChangeMovePanel
+        completeTemporaryMove={this.humanCompletesTemporaryMove}
+        undoTemporaryMove={this.humanUndoesTemporaryMove}
+        onTemporaryMove={this.state.humanOnTemporaryMove}
+      />
+      <div className='col-sm-9'>
+      <TicTacToeBoard
+        grid={this.state.grid}
+        winner={this.state.winner}
+        onTemporaryMove={this.state.humanOnTemporaryMove}
+        temporaryMove={this.state.humanTemporaryMove}
+        whoseTurn={this.state.whoseTurn}
+        humanDoesTemporaryMove={this.humanDoesTemporaryMove}
+        computerCompletesMove={this.computerCompletesMove}
+      />
+      </div>
+      <div className='col-sm-3'>
+      <GamePanel
+        name={this.state.name}
+        winner={this.state.winner}
+        whoseTurn={this.state.whoseTurn}
+        newGame={this.newGame}
+      />
+      </div>
+    </div>
+  )
+
   render() {
     return (
-      <div>
-        {this.state.humanOnTemporaryMove ?
-          <ChangeMovePanel
-            completeTemporaryMove={this.humanCompletesTemporaryMove}
-            undoTemporaryMove={this.humanUndoesTemporaryMove}
-          /> : null}
-        <TicTacToeBoard
-          grid={this.state.grid}
-          winner={this.state.winner}
-          onTemporaryMove={this.state.humanOnTemporaryMove}
-          temporaryMove={this.state.humanTemporaryMove}
-          whoseTurn={this.state.whoseTurn}
-          humanDoesTemporaryMove={this.humanDoesTemporaryMove}
-          computerCompletesMove={this.computerCompletesMove}
-        />
-        {this.state.name ? <GamePanel
-          name={this.state.name}
-          winner={this.state.winner}
-          whoseTurn={this.state.whoseTurn}
-          newGame={this.newGame}
-        /> : null }
+      <div className='container'>
+        {this.state.name ? this._renderApp(): null}
       </div>
     )
   }
