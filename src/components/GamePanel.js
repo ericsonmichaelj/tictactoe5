@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react'
-import { players } from '../constants/'
+import { players, possibleWinners } from '../constants/'
 
 class GamePanel extends React.Component {
 
@@ -8,9 +8,17 @@ class GamePanel extends React.Component {
       return (
         <div>
           <p>
-            {this.props.winner === players.HUMAN ?
+            {
+              this.props.winner === possibleWinners.HUMAN &&
               <span className='human-wins'>You won!</span>
-              : <span className='computer-wins'>Computer won!</span>
+            }
+            {
+              this.props.winner === possibleWinners.COMPUTER &&
+              <span className='computer-wins'>Computer won!</span>
+            }
+            {
+              this.props.winner === possibleWinners.TIE &&
+              <span className='tie'>It is a tie!</span>
             }
           </p>
           <button className='btn btn-primary' onClick={this.props.newGame}>
@@ -38,8 +46,8 @@ class GamePanel extends React.Component {
         </div>
         <div className='panel-body text-center game-panel-text'>
           <p>Welcome {this.props.name}</p>
-          <hr/>
-            {this._renderGameStatusMessage()}
+          <hr />
+          {this._renderGameStatusMessage()}
         </div>
       </div>
     )
@@ -48,7 +56,9 @@ class GamePanel extends React.Component {
 
 GamePanel.propTypes = {
   name: PropTypes.string.isRequired,
-  winner: PropTypes.oneOf([players.HUMAN, players.COMPUTER]),
+  winner: PropTypes.oneOf(
+    [possibleWinners.HUMAN, possibleWinners.COMPUTER, possibleWinners.TIE]
+  ),
   whoseTurn: PropTypes.oneOf([players.HUMAN, players.COMPUTER]),
   newGame: PropTypes.func.isRequired
 }

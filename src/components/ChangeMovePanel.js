@@ -19,7 +19,7 @@ const ChangeMovePanel = ({ completeTemporaryMove, undoTemporaryMove, onTemporary
         <div className='text-center'>
           { onTemporaryMove ?
             <ReactCountdownClock
-              seconds={30}
+              seconds={3}
               color='#d9534f'
               alpha={1}
               size={40}

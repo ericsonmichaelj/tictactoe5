@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import {
   players,
+  possibleWinners,
   ROWS_IN_GRID,
   COLUMNS_IN_GRID
 } from '../constants'
@@ -64,11 +65,13 @@ Cell.propTypes = {
     column: PropTypes.number,
     row: PropTypes.number
   }),
-  winner: PropTypes.oneOf([players.HUMAN, players.COMPUTER]),
+  winner: PropTypes.oneOf(
+    [possibleWinners.HUMAN, possibleWinners.COMPUTER, possibleWinners.TIE]
+  ),
   value: PropTypes.oneOf([players.HUMAN, players.COMPUTER]),
   onTemporaryMove: PropTypes.bool.isRequired,
   humanDoesTemporaryMove: PropTypes.func.isRequired,
-  whoseTurn: PropTypes.oneOf([players.HUMAN, players.COMPUTER]).isRequired
+  whoseTurn: PropTypes.oneOf([players.HUMAN, players.COMPUTER])
 }
 
 export default Cell

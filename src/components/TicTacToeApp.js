@@ -6,10 +6,12 @@ import TicTacToeBoard from './TicTacToeBoard'
 import GamePanel from './GamePanel'
 import {
   players,
+  possibleWinners,
   ROWS_IN_GRID,
   COLUMNS_IN_GRID,
   LENGTH_OF_DIAGONAL_IN_GRID
  } from '../constants/'
+import GridUtils from '../utils'
 
 const mutableGridRow = Array(ROWS_IN_GRID).fill(null)
 const mutableGrid = Array(COLUMNS_IN_GRID).fill(mutableGridRow)
@@ -61,15 +63,22 @@ class TicTacToeApp extends React.Component {
       humanOnTemporaryMove: false,
       humanTemporaryMove: null,
       grid: gridWithNewMove
-    }, this._updateGameResultsAfterMove)
+    }, () => this._updateGameResultsAfterMove({ row, column }))
   }
 
-  _updateGameResultsAfterMove() {
+  _updateGameResultsAfterMove(moveMade) {
     const currentPlayer = this.state.whoseTurn
     const otherPlayer = currentPlayer  === players.COMPUTER ? players.HUMAN : players.COMPUTER
-    const winner = this._checkForWinner(currentPlayer)
-    if (winner) {
-      this.setState({ winner: currentPlayer })
+    const gridUtils  = new GridUtils(this.state.grid,
+      COLUMNS_IN_GRID, ROWS_IN_GRID, LENGTH_OF_DIAGONAL_IN_GRID)
+    const winner = this._checkForWinner(currentPlayer, moveMade, gridUtils)
+    const isTie = this._checkForTie(gridUtils)
+    if (winner || isTie) {
+      if (winner) {
+        this.setState({ winner: currentPlayer })
+      } else  {
+        this.setState({ winner: possibleWinners.TIE })
+      }
     } else {
       this.setState({ whoseTurn:  otherPlayer })
     }
@@ -81,93 +90,70 @@ class TicTacToeApp extends React.Component {
     })
   }
 
-  _checkForWinner = (itemInCell) => {
-    if (this._hasXInAnyRow(itemInCell, ROWS_IN_GRID) ||
-        this._hasXInAnyDiagonal(itemInCell, COLUMNS_IN_GRID) ||
-        this._hasXInAnyColumn(itemInCell, LENGTH_OF_DIAGONAL_IN_GRID)) {
-      return true
-    }
-    return false
+  _checkForWinner = (currentPlayer, moveMade, gridUtils) => {
+    const amountToWinBy = 5
+    const column = moveMade.column
+    const row = moveMade.row
+    const shouldCheckForwardDiagonal = column === row
+    const shouldCheckBackwardsDiagonal = column + row  === LENGTH_OF_DIAGONAL_IN_GRID - 1
+    return (gridUtils.hasXAmountOrMoreInRow(row, currentPlayer, amountToWinBy)
+        || gridUtils.hasXAmountOrMoreInColumn(column, currentPlayer, amountToWinBy)
+        || (shouldCheckForwardDiagonal
+            && gridUtils.hasXAmountOrMoreInForwardDiagonal(currentPlayer, amountToWinBy)
+            )
+        || (shouldCheckBackwardsDiagonal &&
+            gridUtils.hasXAmountOrMoreInBackwardsDiagonal(currentPlayer, amountToWinBy)
+            )
+    )
   }
 
-  _hasXInAnyDiagonal = (item, x) =>
-    this._hasXInForwardDiagonal(item, x) || this._hasXInBackwardDiagonal(item, x)
-
-  _hasXInForwardDiagonal = (item, x) => {
-    let allowableUnfoundItemsInforwardDiagonal = LENGTH_OF_DIAGONAL_IN_GRID - x
-    for (let i = 0; i < LENGTH_OF_DIAGONAL_IN_GRID; i += 1) {
-      if (this.state.grid.getIn([i, i]) !== item) {
-        allowableUnfoundItemsInforwardDiagonal -= 1
-      }
-      if (allowableUnfoundItemsInforwardDiagonal < 0) {
+  _checkForTie = (gridUtils) => {
+    for (let row = 0; row < ROWS_IN_GRID; row += 1) {
+      if (gridUtils.hasXAmountOrMoreInRow(row, null, 1)) {
         return false
       }
     }
     return true
   }
 
-  _hasXInBackwardDiagonal = (item, x) => {
-    let allowableUnfoundItemsInBackwardsDiagonal = LENGTH_OF_DIAGONAL_IN_GRID - x
-    for (let i = 0; i < LENGTH_OF_DIAGONAL_IN_GRID; i += 1) {
-      if (this.state.grid.getIn([LENGTH_OF_DIAGONAL_IN_GRID - 1 - i, i]) !== item) {
-        allowableUnfoundItemsInBackwardsDiagonal -= 1
-      }
-      if (allowableUnfoundItemsInBackwardsDiagonal < 0) {
-        return false
-      }
-    }
-    return true
-  }
+  // _hasXInAnyDiagonal = (item, ) =>
+  //   this._hasXInForwardDiagonal(item, x) || this._hasXInBackwardDiagonal(item, x)
 
-  _hasXInAnyRow = (item, x) => {
-    for (let i = 0; i < ROWS_IN_GRID; i += 1) {
-      if (this._hasXInARow(item, i, x)) {
-        return true
-      }
-    }
-    return false
-  }
+  // _hasXInForwardDiagonal = (item, x) => {
+  //   let allowableUnfoundItemsInforwardDiagonal = LENGTH_OF_DIAGONAL_IN_GRID - x
+  //   for (let i = 0; i < LENGTH_OF_DIAGONAL_IN_GRID; i += 1) {
+  //     if (this.state.grid.getIn([i, i]) !== item) {
+  //       allowableUnfoundItemsInforwardDiagonal -= 1
+  //     }
+  //     if (allowableUnfoundItemsInforwardDiagonal < 0) {
+  //       return false
+  //     }
+  //   }
+  //   return true
+  // }
 
-  _hasXInARow = (item, row, x) => {
-    let allowableUnfoundItemsInARow = COLUMNS_IN_GRID - x
-    const list = this.state.grid.get(row)
-    for (let i = 0; i < COLUMNS_IN_GRID; i += 1) {
-      if (list.get(i) !== item) {
-        allowableUnfoundItemsInARow -= 1
-      }
-      if (allowableUnfoundItemsInARow < 0) {
-        return false
-      }
-    }
-    return true
-  }
+  // _hasXInAnyRow = (item, x) => {
+  //   for (let row = 0; row < ROWS_IN_GRID; row += 1) {
+  //     if (hasXAmountInRow(grid, COLUMNS_IN_GRID, row, x)) {
+  //       return true
+  //     }
+  //   }
+  //   return false
+  // }
 
-  _hasXInAnyColumn = (item, x) => {
-    for (let i = 0; i < COLUMNS_IN_GRID; i += 1) {
-      if (this._hasXInAColumn(item, i, x)) {
-        return true
-      }
-    }
-    return false
-  }
-
-  _hasXInAColumn = (item, column, x) => {
-    let allowableUnfoundItemsInColumn = ROWS_IN_GRID - x
-    for (let i = 0; i < ROWS_IN_GRID; i += 1) {
-      if (this.state.grid.get(i).get(column) !== item) {
-        allowableUnfoundItemsInColumn -= 1
-      }
-      if (allowableUnfoundItemsInColumn < 0) {
-        return false
-      }
-    }
-    return true
-  }
+  // _hasXInAnyColumn = (item, x) => {
+  //   for (let i = 0; i < COLUMNS_IN_GRID; i += 1) {
+  //     if (this._hasXInAColumn(item, i, x)) {
+  //       return true
+  //     }
+  //   }
+  //   return false
+  // }
 
   computerCompletesMove = (move) => {
     this.setState({
       grid: this.state.grid.setIn([move.row, move.column], players.COMPUTER)
-    }, this._updateGameResultsAfterMove)
+    }, () => this._updateGameResultsAfterMove(move))
   }
 
   newGame = () => {
@@ -182,23 +168,23 @@ class TicTacToeApp extends React.Component {
         onTemporaryMove={this.state.humanOnTemporaryMove}
       />
       <div className='col-sm-9'>
-      <TicTacToeBoard
-        grid={this.state.grid}
-        winner={this.state.winner}
-        onTemporaryMove={this.state.humanOnTemporaryMove}
-        temporaryMove={this.state.humanTemporaryMove}
-        whoseTurn={this.state.whoseTurn}
-        humanDoesTemporaryMove={this.humanDoesTemporaryMove}
-        computerCompletesMove={this.computerCompletesMove}
-      />
+        <TicTacToeBoard
+          grid={this.state.grid}
+          winner={this.state.winner}
+          onTemporaryMove={this.state.humanOnTemporaryMove}
+          temporaryMove={this.state.humanTemporaryMove}
+          whoseTurn={this.state.whoseTurn}
+          humanDoesTemporaryMove={this.humanDoesTemporaryMove}
+          computerCompletesMove={this.computerCompletesMove}
+        />
       </div>
       <div className='col-sm-3'>
-      <GamePanel
-        name={this.state.name}
-        winner={this.state.winner}
-        whoseTurn={this.state.whoseTurn}
-        newGame={this.newGame}
-      />
+        <GamePanel
+          name={this.state.name}
+          winner={this.state.winner}
+          whoseTurn={this.state.whoseTurn}
+          newGame={this.newGame}
+        />
       </div>
     </div>
   )
@@ -206,7 +192,7 @@ class TicTacToeApp extends React.Component {
   render() {
     return (
       <div className='container'>
-        {this.state.name ? this._renderApp(): null}
+        {this.state.name ? this._renderApp() : null}
       </div>
     )
   }

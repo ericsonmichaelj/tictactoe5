@@ -16,7 +16,6 @@
     width: 75%;
     margin: 0 auto;
 }
-
 @media only screen and (min-width: 450px) {
     .board {
         width: 50%;
@@ -63,5 +62,9 @@
 }
 .human-wins {
     color: #3c763d;
+    font-weight: bold;
+}
+.tie {
+    color: #31708f;
     font-weight: bold;
 }

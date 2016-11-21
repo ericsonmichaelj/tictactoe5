@@ -9,5 +9,5 @@ const server = new webpackDevServer(compiler,{
     hot: true
 });
 server.listen(SERVER_PORT_NUMBER, function(){
-  console.log('server is listening in on' + SERVER_PORT_NUMBER)
+  console.log('server is listening in on ' + SERVER_PORT_NUMBER)
 });
