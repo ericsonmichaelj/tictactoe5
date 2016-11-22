@@ -116,40 +116,6 @@ class TicTacToeApp extends React.Component {
     return true
   }
 
-  // _hasXInAnyDiagonal = (item, ) =>
-  //   this._hasXInForwardDiagonal(item, x) || this._hasXInBackwardDiagonal(item, x)
-
-  // _hasXInForwardDiagonal = (item, x) => {
-  //   let allowableUnfoundItemsInforwardDiagonal = LENGTH_OF_DIAGONAL_IN_GRID - x
-  //   for (let i = 0; i < LENGTH_OF_DIAGONAL_IN_GRID; i += 1) {
-  //     if (this.state.grid.getIn([i, i]) !== item) {
-  //       allowableUnfoundItemsInforwardDiagonal -= 1
-  //     }
-  //     if (allowableUnfoundItemsInforwardDiagonal < 0) {
-  //       return false
-  //     }
-  //   }
-  //   return true
-  // }
-
-  // _hasXInAnyRow = (item, x) => {
-  //   for (let row = 0; row < ROWS_IN_GRID; row += 1) {
-  //     if (hasXAmountInRow(grid, COLUMNS_IN_GRID, row, x)) {
-  //       return true
-  //     }
-  //   }
-  //   return false
-  // }
-
-  // _hasXInAnyColumn = (item, x) => {
-  //   for (let i = 0; i < COLUMNS_IN_GRID; i += 1) {
-  //     if (this._hasXInAColumn(item, i, x)) {
-  //       return true
-  //     }
-  //   }
-  //   return false
-  // }
-
   computerCompletesMove = (move) => {
     this.setState({
       grid: this.state.grid.setIn([move.row, move.column], players.COMPUTER)
@@ -157,7 +123,7 @@ class TicTacToeApp extends React.Component {
   }
 
   newGame = () => {
-    this.setState({ ...newGameConfig, name: this.state.name })
+    this.setState({ ...newGameConfig, name: this.state.name})
   }
 
   _renderApp = () => (

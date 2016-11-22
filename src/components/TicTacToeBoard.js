@@ -138,7 +138,7 @@ TicTacToeBoard.propTypes = {
   onTemporaryMove: PropTypes.bool,
   computerCompletesMove: PropTypes.func.isRequired,
   humanDoesTemporaryMove: PropTypes.func.isRequired,
-  whoseTurn: PropTypes.oneOf([players.HUMAN, players.COMPUTER]),
+  whoseTurn: PropTypes.oneOf([players.HUMAN, players.COMPUTER])
 }
 
 export default TicTacToeBoard
