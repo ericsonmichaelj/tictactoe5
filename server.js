@@ -6,7 +6,7 @@ const config = require('./webpack.config.js')
 const compiler = webpack(config)
 const express = require('express')
 var server;
-if (process.env.NODE_ENV === undefined) {
+if (process.env.NODE_ENV === 'production') {
   server = express()
   server.use(express.static('dist'))
 } else {
