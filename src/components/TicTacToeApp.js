@@ -123,7 +123,7 @@ class TicTacToeApp extends React.Component {
   }
 
   newGame = () => {
-    this.setState({ ...newGameConfig, name: this.state.name})
+    this.setState({ ...newGameConfig, name: this.state.name })
   }
 
   _renderApp = () => (
